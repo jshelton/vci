@@ -1,0 +1,133 @@
+#!/bin/sh
+
+
+########################
+# Name: [vci]
+# Created: Tuesday, January 22, 2019
+# Source: Joshua Shelton
+# Description:
+#    This will look at the rsync running process to verify images in
+#    that path and keep running until the rsync process has finished.
+#
+# Improvements:
+#    - This currently uses verifyPath. and verifyImport.sh
+# Modified:
+# 2019-01-22 - Changed name to vci (verify current import)
+
+
+
+_OPTIONS=$1
+_FNAME=$2
+
+_DEBUG="off"
+
+LOG_FILE=$HOME/tmp/verifyLog
+VERIFY_SCRIPT_PATH=$HOME/local/bin/verifyPath.sh
+
+function DEBUG()
+{
+	[ "$_DEBUG" == "on" ] && $@
+}
+
+function DEBUG_TEST()
+{
+	eval " [ $@ ] "
+	RUN_RESULT=$?
+	
+	if [ $RUN_RESULT = 0 ]; then
+		RESULT="TRUE"
+	else
+		RESULT="FALSE"
+	fi
+	
+	[ "$_DEBUG" == "on" ] && echo "TEST [$@]: $RESULT"
+}
+
+function usage()
+{
+
+# Script Name...
+	echo "${0##/*/}:"
+
+# Usage for script...
+#REPLACE NEXT LINE
+	echo "usage: ${0##/*/} "
+	echo
+
+# Description for script...
+#REPLACE NEXT LINE
+	echo "\t This script looks in rsync to see if any directories are copying files. It will run verifyPath.sh to verify the destination folder. "
+# ...Description of script..."
+	echo
+
+# Switch descriptions... 
+#	echo "Options: "
+##REPLACE NEXT LINE
+#	echo "-o, --option\t: ..option description..."
+##REPLACE NEXT LINE
+#	echo "-o2, --option2\t: ...option description..."
+#	echo 
+
+# Tips for using script...
+#	echo "Tips:"
+##REPLACE NEXT LINE
+#	echo "...Tips for usage..."
+
+}
+
+
+### Begining of Process Arguments ---
+
+# To get help
+if [[ "$_OPTIONS" = "-h" || "$_OPTIONS" = "--help" ]]; then
+	usage
+	exit
+# Option 1
+#elif [[ "$_OPTIONS" = "-o" || "$_OPTIONS" = "--option" ]]; then
+#	DEBUG echo "option 2"
+# Option 2
+#elif [[ "$_OPTIONS" = "-o2" || "$_OPTIONS" = "--option2" ]]; then
+#	DEBUG echo "option 2"
+
+# ...Enter Switches here...
+
+fi
+
+# Default
+# if a valid filename is the first argument, then ignore all other switches.
+if [[ ! -e $_FNAME && -e $1 ]]; then
+	_FNAME=$1
+fi
+
+### End of Process Arguments ---
+
+
+### Begin of Program ---
+
+
+while ps  | grep -v grep | grep 'rsync.*/Volumes/Seagate Pictures 8TB/Import/.*' > /dev/null;
+do
+    WORK_DIR="$(ps | grep -v grep | grep 'rsync.*/Volumes/Seagate Pictures 8TB/Import/.*' | head -n 1 | sed -e 's#.* /#/#')";
+
+    if [ -d "$WORK_DIR" ];
+    then
+	cd "$WORK_DIR";
+	echo "Verifying Dir: $(pwd)" | tee $LOG_FILE;
+	$VERIFY_SCRIPT_PATH ;
+    else
+	echo "Trouble changing directory: '$WORK_DIR'";
+    fi;
+
+    echo "$(date) - Still Running..."  | tee $LOG_FILE ;
+    sleep 10;
+done
+
+echo "Last Check" > $LOG_FILE
+$VERIFY_SCRIPT_PATH | tee $LOG_FILE
+$VERIFY_SCRIPT_PATH | tee $LOG_FILE
+echo "Finished Last Check" > $LOG_FILE
+
+### End of Program ---
+
+DEBUG echo "DONE"
+
