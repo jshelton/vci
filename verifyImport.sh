@@ -111,25 +111,24 @@ function DEBUG_TEST()
 
 function usage()
 {
+	# Script Name...
+	echo "${0##/*/}:"
 
-# Script Name...
-echo "${0##/*/}:"
+	# Usage for script...
+	echo "usage: ${0##/*/} [-tv] <name of file>"
+	echo
 
-# Usage for script...
-echo "usage: ${0##/*/} [-tv] <name of file>"
-echo
+	# Description for script...
+	#REPLACE NEXT LINE
+	echo "\t ...Description of script..."
+	echo
 
-# Description for script...
-#REPLACE NEXT LINE
-echo "\t ...Description of script..."
-echo
+	# Switch descriptions... 
+	echo "Options: "
+	echo "-t, --read-from-stdin\t: To read files from standard input instead"
 
-# Switch descriptions... 
-echo "Options: "
-echo "-t, --read-from-stdin\t: To read files from standard input instead"
-
-echo "-v, --version\t: print script version."
-echo 
+	echo "-v, --version\t: print script version."
+	echo 
 
 
 }
@@ -376,7 +375,6 @@ then
 		fi
 	done
 	echo "+Finished rechecking files that had previously failed"
-
 	if [[ "$ERRORS" != "" ]]
 	then
 		printf "Files reporting errors:\n$ERRORS"
