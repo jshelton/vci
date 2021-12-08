@@ -72,7 +72,11 @@
 #
 #   - [2017-06-22]: Fix issue where rechecking files from before where they already
 #                   passed (select files not OK'ed instead of NO in database)
+#
 #   - [2019-06-30]: Add argument to check previous files that failed
+#
+#   - [2021-12-08]: Add central database and update local and central databases when 
+#                   there are new items
 ##
 
 _OPTIONS=$1
